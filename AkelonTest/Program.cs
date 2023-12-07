@@ -18,9 +18,8 @@ namespace AkelonTest
                 ["Георгиев Георг Георгиевич"] = new List<DateTime>()
             };
             var WorkingDays = new List<String>() { "Monday", "Tuesday", "Wednesday", "Thursday", "Friday" };
-            // Список отпусков сотрудников
-            List<DateTime> Vacations = new List<DateTime>();
-            int AllVacationCount = 0;
+           
+            List<DateTime> Vacations = new List<DateTime>();          
             List<DateTime> dateList = new List<DateTime>();
             List<DateTime> SetDateList = new List<DateTime>();
             Random rnd = new Random();
@@ -28,20 +27,23 @@ namespace AkelonTest
             DateTime endDate = new DateTime();
             DateTime start = new DateTime(DateTime.Now.Year, 1, 1);
             DateTime end = new DateTime(DateTime.Today.Year, 12, 31);
+            
+            List<DateTime> cashRandomDate = new List<DateTime>();
+            for (DateTime dt = start; dt < end; dt = dt.AddDays(1))
+            {
+                cashRandomDate.Add(dt);                
+            }
+
             int range = (end - start).Days;
             int difference = 0;
             foreach (var VacationList in VacationDictionary)
             {
-
-                //Random step = new Random();
-
-
                 dateList = VacationList.Value;
                 int vacationCount = 28;
                 while (vacationCount > 0)
                 {
 
-                    var startDate = start.AddDays(rnd.Next(range));
+                    var startDate = cashRandomDate[rnd.Next(cashRandomDate.Count)];
 
                     if (WorkingDays.Contains(startDate.DayOfWeek.ToString()))
                     {
@@ -51,24 +53,11 @@ namespace AkelonTest
                             difference = 7;
                         }
                         else
-                        {
-                            ///*string[]*/ int[] vacationSteps = { 7, 14 };
+                        {                            
                             int vacIndex = rnd.Next(vacationSteps.Length);
-
-                            //var endDate = new DateTime(DateTime.Now.Year, 12, 31);
-                            //difference = 0;
-                            /*if (vacationSteps[vacIndex] == "7")
-                            {*/
-                            endDate = startDate.AddDays(/*7*/ vacationSteps[vacIndex]);
-                            difference = vacationSteps[vacIndex];
-                            //}
-                            /*if (vacationSteps[vacIndex] == "14")
-                            {
-                                endDate = startDate.AddDays(14);
-                                difference = 14;
-                            }*/
+                            difference = vacationSteps[vacIndex];                         
+                            endDate = startDate.AddDays(vacationSteps[vacIndex]);                            
                         }
-
 
                         // Проверка условий по отпуску
                         bool CanCreateVacation = false;
@@ -92,7 +81,8 @@ namespace AkelonTest
                                 Vacations.Add(dt);
                                 dateList.Add(dt);
                             }
-                            AllVacationCount++;
+                            cashRandomDate = cashRandomDate.Except(Vacations).ToList<DateTime>();//700                             
+                        
                             vacationCount -= difference;
                         }
                     }
@@ -102,8 +92,10 @@ namespace AkelonTest
             {
                 SetDateList = VacationList.Value;
                 Console.WriteLine("Дни отпуска " + VacationList.Key + " : ");
-                //for (int i = 0; i < SetDateList.Count; i++) { Console.WriteLine(SetDateList[i]); } 
-                SetDateList.ForEach(x => Console.WriteLine(x));
+                for (int i = 0; i < SetDateList.Count; i++) 
+                { 
+                    Console.WriteLine(SetDateList[i]); 
+                }                 
             }
             Console.ReadKey();
         }
